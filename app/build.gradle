@@ -1,14 +1,38 @@
 plugins { id 'com.android.application' }
+def ksPath = System.getenv('DP_SIGNING_KEYSTORE')
 android {
     namespace 'ir.divarplus.app'
-    compileSdk 35
+    compileSdk 36
     defaultConfig {
         applicationId 'ir.divarplus.app'
         minSdk 24
-        targetSdk 35
-        versionCode 1
-        versionName '1.0.1'
+        targetSdk 36
+        versionCode 2
+        versionName '1.1.0'
     }
-    buildTypes { release { minifyEnabled false } }
-    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    signingConfigs {
+        release {
+            if (ksPath != null && !ksPath.isBlank()) {
+                storeFile file(ksPath)
+                storePassword System.getenv('DP_STORE_PASSWORD')
+                keyAlias System.getenv('DP_KEY_ALIAS') ?: 'divarplus_release'
+                keyPassword System.getenv('DP_KEY_PASSWORD')
+                enableV1Signing true
+                enableV2Signing true
+                enableV3Signing true
+            }
+        }
+    }
+    buildTypes {
+        debug { debuggable true }
+        release {
+            debuggable false
+            minifyEnabled false
+            if (ksPath != null && !ksPath.isBlank()) signingConfig signingConfigs.release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 }
