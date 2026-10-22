@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Build;
+import android.view.WindowInsets;
 import android.view.Gravity;
 import android.view.View;
 import android.webkit.WebResourceError;
@@ -37,6 +39,13 @@ public final class MainActivity extends Activity {
         root = new FrameLayout(this);
         root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         setContentView(root);
+        if (Build.VERSION.SDK_INT >= 35) {
+            root.setOnApplyWindowInsetsListener((v, insets) -> {
+                android.graphics.Insets bars = insets.getInsets(WindowInsets.Type.systemBars());
+                v.setPadding(bars.left,bars.top,bars.right,bars.bottom);
+                return insets;
+            });
+        }
         homeUrl = getSharedPreferences(PREF,MODE_PRIVATE).getString(URL_KEY,"");
         if(homeUrl.isEmpty()) showSetup(); else showWebsite();
     }
@@ -109,8 +118,16 @@ public final class MainActivity extends Activity {
         s.setAllowFileAccess(false);
         s.setAllowContentAccess(false);
         s.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
+        s.setJavaScriptCanOpenWindowsAutomatically(false);
+        s.setSupportMultipleWindows(false);
+        s.setAllowUniversalAccessFromFileURLs(false);
+        s.setAllowFileAccessFromFileURLs(false);
+        s.setGeolocationEnabled(false);
+        if (Build.VERSION.SDK_INT >= 26) s.setSafeBrowsingEnabled(true);
+        WebView.setWebContentsDebuggingEnabled(false);
         web.setWebViewClient(new WebViewClient() {
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest req) {
+                if (!req.isForMainFrame()) return false;
                 Uri uri=req.getUrl();
                 String host=uri.getHost();
                 if("https".equalsIgnoreCase(uri.getScheme()) &&
@@ -120,7 +137,9 @@ public final class MainActivity extends Activity {
                 }
                 Uri base=Uri.parse(homeUrl);
                 if(!"https".equalsIgnoreCase(uri.getScheme()) ||
-                   host==null || !host.equalsIgnoreCase(base.getHost())) {
+                   host==null || !host.equalsIgnoreCase(base.getHost()) ||
+                   uri.getPort()!=base.getPort() ||
+                   uri.getPath()==null || !uri.getPath().startsWith(base.getPath())) {
                     openExternal(uri);
                     return true;
                 }
