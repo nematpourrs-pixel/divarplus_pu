@@ -2,8 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
     <application android:label="دیوارپلاس" android:theme="@android:style/Theme.Material.Light.NoActionBar"
-        android:usesCleartextTraffic="false" android:supportsRtl="true"
+        android:usesCleartextTraffic="false" android:supportsRtl="true" android:allowBackup="false" android:fullBackupContent="false"
         android:icon="@drawable/icon">
+        <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing" android:value="true"/>
         <activity android:name=".MainActivity" android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
