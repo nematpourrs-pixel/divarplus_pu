@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Build;
@@ -69,7 +70,7 @@ public final class MainActivity extends Activity {
         layout.setPadding(36,44,36,44);
         layout.setBackgroundColor(Color.rgb(248,250,253));
         TextView title = text("دیوارپلاس",30,Color.rgb(25,38,59));
-        title.setTypeface(null,1);
+        title.setTypeface(null,Typeface.BOLD);
         layout.addView(title);
         TextView desc = text("آدرس HTTPS سرور دیوارپلاس را وارد کنید. مسیر نصب شما /divar_plus/ است. این برنامه هیچ آگهی آزمایشی ندارد.",15,Color.rgb(80,95,115));
         desc.setPadding(0,24,0,25);
